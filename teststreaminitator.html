@@ -1,0 +1,65 @@
+﻿<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="simplepeer.min.js"></script>
+    <script type="text/javascript">
+      
+        //var p = new SimplePeer({ initiator: true, stream: stream, trickle: false });
+
+        function doinit() {                    
+            alert(document.getElementById("myform").innerHTML);
+
+            
+        }
+
+        // get video/voice stream
+        navigator.getUserMedia({ video: true, audio: true }, gotMedia, function () { })
+
+        function gotMedia(stream) {
+            var p = new SimplePeer({ initiator: true, stream: stream, trickle: false });
+
+            document.getElementById("myform").addEventListener('submit', function (ev) {
+                //event("got here");
+                ev.preventDefault();
+                p.signal(JSON.parse(document.querySelector('#incoming').value));
+            });
+
+            p.on('error', function (err) { console.log('error', err) });
+
+            p.on('signal', function (data) {
+                console.log('SIGNAL', JSON.stringify(data));
+                document.querySelector('#outgoing').textContent = JSON.stringify(data);
+            });
+
+
+
+            //p.on('connect', function () {
+            //    console.log('CONNECT');
+            //    p.send('whatever' + Math.random());
+            //});
+
+            //p.on('data', function (data) {
+            //    console.log('data: ' + data);
+            //});
+        }
+
+
+    </script>
+</head>
+
+<body onload="doinit();">
+    <style>
+        #outgoing {
+            width: 600px;
+            word-wrap: break-word;
+        }
+    </style>
+    <form id="myform">
+        <textarea id="incoming"></textarea>
+        <button type="submit">submit</button>
+    </form>
+    <pre id="outgoing"></pre>
+    <!--<script src="bundle.js"></script>-->
+</body>
+
+</html>
